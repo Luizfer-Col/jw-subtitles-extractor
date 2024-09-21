@@ -5,6 +5,26 @@ import re
 import os
 import unicodedata
 
+def convert_srt_to_txt(srt_file, output_txt_file):
+    with open(srt_file, 'r', encoding='utf-8') as srt:
+        lines = srt.readlines()
+
+    with open(output_txt_file, 'w', encoding='utf-8') as txt:
+        text_content = []
+        for line in lines:
+            # Ignorar números de línea, marcas de tiempo y líneas vacías
+            if re.match(r'^\d+$', line.strip()):  # Ignorar números de línea
+                continue
+            if re.match(r'^\d{2}:\d{2}:\d{2}', line.strip()):  # Ignorar marcas de tiempo
+                continue
+            if line.strip() == '':  # Ignorar líneas vacías
+                continue
+            # Añadir el texto real sin saltos de línea
+            text_content.append(line.strip())
+        
+        # Unir el contenido como un solo párrafo y escribirlo al archivo de salida
+        txt.write(" ".join(text_content))
+
 # Función para limpiar caracteres especiales del título
 def clean_filename(filename):
     # Normalizar el texto para separar caracteres con tilde
@@ -100,20 +120,28 @@ def download_subtitles():
         return
     
     try:
-        # Comando FFmpeg para extraer subtítulos
+        srt_file = f'{output_name}.srt'
+        # Comando FFmpeg para extraer subtítulos en formato .srt
         ffmpeg_command = [
             'ffmpeg',
             '-i', video_url,            # Enlace del video
             '-map', '0:s:0',            # Extraer el primer subtítulo
             '-c:s', 'srt',              # Formato de subtítulos .srt
-            f'{output_name}.srt'         # Archivo de salida
+            srt_file                    # Archivo de salida .srt
         ]
         
-        # Ejecuta el comando FFmpeg
+        # Ejecutar el comando FFmpeg
         subprocess.run(ffmpeg_command, check=True)
+
+        # Convertir el archivo .srt a .txt
+        txt_file = f'{output_name}.txt'
+        convert_srt_to_txt(srt_file, txt_file)
+
+        messagebox.showinfo("Éxito", f"Subtítulos convertidos a texto correctamente como {txt_file}.")
+        # Opcional: eliminar el archivo SRT si no lo necesitas
+        os.remove(srt_file)
         
-        # Mostrar el mensaje de éxito y reiniciar la vista
-        messagebox.showinfo("Éxito", f"Subtítulos descargados correctamente como {output_name}.srt.")
+        # Resetear la vista
         reset_view()
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Error al ejecutar FFmpeg: {e}")
