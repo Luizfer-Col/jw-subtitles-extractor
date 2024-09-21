@@ -157,6 +157,10 @@ analyze_button.pack(pady=10)
 title_label = tk.Label(root, text="", wraplength=350, justify="left")
 title_label.pack(pady=10)
 
+# Etiqueta para el campo del nombre de archivo
+output_name_label = tk.Label(root, text="Nombre de archivo de salida:")
+output_name_label.pack(pady=5)
+
 # Variable para almacenar el nombre de salida del archivo
 output_name_var = StringVar()
 output_name_entry = tk.Entry(root, textvariable=output_name_var, width=50, state=tk.DISABLED)
