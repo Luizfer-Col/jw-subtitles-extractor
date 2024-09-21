@@ -112,7 +112,9 @@ def download_subtitles():
         # Ejecuta el comando FFmpeg
         subprocess.run(ffmpeg_command, check=True)
         
+        # Mostrar el mensaje de éxito y reiniciar la vista
         messagebox.showinfo("Éxito", f"Subtítulos descargados correctamente como {output_name}.srt.")
+        reset_view()
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Error al ejecutar FFmpeg: {e}")
 
@@ -122,6 +124,18 @@ def toggle_output_name_entry():
         output_name_entry.config(state=tk.DISABLED)
     else:
         output_name_entry.config(state=tk.NORMAL)
+
+# Función para resetear la vista
+def reset_view():
+    # Restablecer todos los valores a su estado inicial
+    entry.delete(0, tk.END)  # Limpiar el campo de entrada de video URL
+    title_label.config(text="")  # Limpiar la etiqueta del título
+    output_name_var.set("")  # Limpiar el campo de nombre de archivo
+    use_title_var.set(False)  # Desmarcar el checkbox
+    toggle_output_name_entry()  # Asegurarse de que el campo de nombre esté habilitado
+    download_button.config(state=tk.DISABLED)  # Deshabilitar el botón de descarga
+    output_name_entry.config(state=tk.DISABLED)  # Deshabilitar el campo de nombre de archivo
+    use_title_checkbox.config(state=tk.DISABLED)  # Deshabilitar el checkbox
 
 # Crear la ventana principal
 root = tk.Tk()
