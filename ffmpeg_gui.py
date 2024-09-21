@@ -116,6 +116,13 @@ def download_subtitles():
     except subprocess.CalledProcessError as e:
         messagebox.showerror("Error", f"Error al ejecutar FFmpeg: {e}")
 
+# Función para habilitar o deshabilitar el campo de entrada del nombre de archivo
+def toggle_output_name_entry():
+    if use_title_var.get():
+        output_name_entry.config(state=tk.DISABLED)
+    else:
+        output_name_entry.config(state=tk.NORMAL)
+
 # Crear la ventana principal
 root = tk.Tk()
 root.title("JW Subtitle Extractor")
@@ -143,7 +150,7 @@ output_name_entry.pack(pady=5)
 
 # Opción para usar el título como nombre de archivo
 use_title_var = tk.BooleanVar()
-use_title_checkbox = Checkbutton(root, text="Usar título como nombre de archivo", variable=use_title_var, state=tk.DISABLED)
+use_title_checkbox = Checkbutton(root, text="Usar título como nombre de archivo", variable=use_title_var, command=toggle_output_name_entry, state=tk.DISABLED)
 use_title_checkbox.pack(pady=5)
 
 # Botón para descargar subtítulos
