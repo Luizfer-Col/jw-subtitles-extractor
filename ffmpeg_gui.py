@@ -5,24 +5,27 @@ import re
 import os
 import unicodedata
 
+# Función para convertir srt a txt 
 def convert_srt_to_txt(srt_file, output_txt_file):
     with open(srt_file, 'r', encoding='utf-8') as srt:
         lines = srt.readlines()
 
-    with open(output_txt_file, 'w', encoding='utf-8') as txt:
-        text_content = []
-        for line in lines:
-            # Ignorar números de línea, marcas de tiempo y líneas vacías
-            if re.match(r'^\d+$', line.strip()):  # Ignorar números de línea
-                continue
-            if re.match(r'^\d{2}:\d{2}:\d{2}', line.strip()):  # Ignorar marcas de tiempo
-                continue
-            if line.strip() == '':  # Ignorar líneas vacías
-                continue
-            # Añadir el texto real sin saltos de línea
-            text_content.append(line.strip())
+    text_content = []
+    for line in lines:
+        # Ignorar números de línea y marcas de tiempo
+        if re.match(r'^\d+$', line.strip()):  # Ignorar números de línea
+            continue
+        if re.match(r'^\d{2}:\d{2}:\d{2}', line.strip()):  # Ignorar marcas de tiempo
+            continue
+        if line.strip() == '':  # Ignorar líneas vacías
+            continue
         
-        # Unir el contenido como un solo párrafo y escribirlo al archivo de salida
+        # Eliminar etiquetas HTML y agregar el texto limpio
+        clean_line = re.sub(r'<.*?>', '', line)  # Quitar etiquetas HTML
+        text_content.append(clean_line.strip())
+
+    # Unir el contenido como un solo párrafo y escribirlo al archivo de salida
+    with open(output_txt_file, 'w', encoding='utf-8') as txt:
         txt.write(" ".join(text_content))
 
 # Función para limpiar caracteres especiales del título
